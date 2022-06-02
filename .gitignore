@@ -1,0 +1,5 @@
+*.ppm
+*.txt
+.vscode
+Makefile
+unit_test_framework.h
