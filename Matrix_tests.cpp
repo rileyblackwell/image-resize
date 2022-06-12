@@ -1,4 +1,3 @@
-#include "Matrix.h"
 #include "Matrix_test_helpers.h"
 #include "unit_test_framework.h"
 #include <sstream>
@@ -37,10 +36,10 @@ TEST(test_matrix_init){
   Matrix *mat = new Matrix; // creates a Matrix in dynamic memory
   Matrix_init(mat, 3, 5);
  
-  ASSERT_TRUE(0 < mat->width && mat->width <= MAX_MATRIX_WIDTH);
-  ASSERT_TRUE(0 < mat->height && mat->height <= MAX_MATRIX_HEIGHT);  
-  ASSERT_EQUAL(mat->width, 3);
-  ASSERT_EQUAL(mat->height, 5);
+  ASSERT_TRUE(0 < Matrix_width(mat) && Matrix_width(mat) <= MAX_MATRIX_WIDTH);
+  ASSERT_TRUE(0 < Matrix_height(mat) && Matrix_height(mat) <= MAX_MATRIX_HEIGHT);  
+  ASSERT_EQUAL(Matrix_width(mat), 3);
+  ASSERT_EQUAL(Matrix_height(mat), 5);
  
   delete mat; // deletes the Matrix   
 }
@@ -59,17 +58,6 @@ TEST(test_matrix_print_basic){
   ASSERT_EQUAL(ss_output.str(), correct_output);
   
   delete mat; // deletes the Matrix    
-}
-
-// Checks that Matrix_height returns the correct height.  Checks that Matrix_width returns the correct width. 
-TEST(test_height_width){
-  Matrix *mat = new Matrix; // creates a Matrix in dynamic memory
-  
-  Matrix_init(mat, 3, 5);  
-  ASSERT_EQUAL(Matrix_height(mat), 5);
-  ASSERT_EQUAL(Matrix_width(mat), 3);
-  
-  delete mat; // deletes the Matrix 
 }
 
 // Tests that Matrix_row and Matrix_column return a correct and valid row and column.
@@ -114,15 +102,11 @@ TEST(test_rows_columns_basic){
 TEST(test_matrix_at_basic){
   Matrix *mat = new Matrix; // creates a Matrix in dynamic memory
   
-  const int width = 5;
-  const int height = 3;
-  Matrix_init(mat, width, height);
-  int i = 0;
+  Matrix_init(mat, 5, 3);
   
-  for(int r = 0; r < height; ++r){
-    for(int c = 0; c < width; ++c){
-      ASSERT_TRUE(0 <= r && r < Matrix_height(mat));
-      ASSERT_TRUE(0 <= c && c < Matrix_width(mat));
+  int i = 0;
+  for(int r = 0; r < Matrix_height(mat); ++r){
+    for(int c = 0; c < Matrix_width(mat); ++c){
       int* actual_ptr = Matrix_at(mat, r, c);
       int* correct_ptr = &mat->data[i++];  
       // Tests that the actual pointer and the correct pointer have the same row and same column. 
@@ -139,15 +123,12 @@ TEST(test_matrix_at_basic){
 TEST(test_const_matrix_at_basic){
   Matrix *const c_mat = new Matrix; // creates a const Matrix in dynamic memory
   
-  const int width = 3;
-  const int height = 5;
-  Matrix_init(c_mat, width, height);  
-  int i = 0;
    
-  for(int r = 0; r < height; ++r){
-    for(int c = 0; c < width; ++c){
-      ASSERT_TRUE(0 <= r && r < Matrix_height(c_mat));
-      ASSERT_TRUE(0 <= c && c < Matrix_width(c_mat));
+  Matrix_init(c_mat, 3, 5);  
+  
+  int i = 0;
+  for(int r = 0; r < Matrix_height(c_mat); ++r){
+    for(int c = 0; c < Matrix_width(c_mat); ++c){
       const int* c_actual_ptr = Matrix_at(c_mat, r, c);
       const int* correct_ptr = &c_mat->data[i++];
       // Tests that the actual pointer and the correct pointer have the same row and same column. 

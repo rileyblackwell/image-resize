@@ -87,7 +87,8 @@ static int squared_difference(Pixel p1, Pixel p2) {
 //           image is computed and written into it.
 //           See the project spec for details on computing the energy matrix.
 void compute_energy_matrix(const Image* img, Matrix* energy) {
-  assert(false); // TODO Replace with your implementation!
+  Matrix_init(energy, Image_width(img), Image_height(img));
+  Matrix_fill(energy, 0);
   assert(squared_difference(Pixel(), Pixel())); // TODO delete me, this is here to make it compile
 }
 

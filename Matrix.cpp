@@ -26,7 +26,7 @@ void Matrix_init(Matrix* mat, int width, int height) {
 void Matrix_print(const Matrix* mat, ostream& os) {
   const int height = Matrix_height(mat);
   const int width = Matrix_width(mat);
-  os << Matrix_width(mat) << " " << Matrix_height(mat) << endl;
+  os << width << " " << height << endl;
   for (int r = 0; r < height; ++r){
     for (int c = 0; c < width; ++c){
       os << *Matrix_at(mat, r, c) << " ";
