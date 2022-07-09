@@ -76,7 +76,16 @@ static int squared_difference(Pixel p1, Pixel p2) {
 // ------------------------------------------------------------------
 // You may change code below this line!
 
-
+// REQUIRES: mat points to a valid Matrix
+//           0 <= r && r < Matrix_height(mat)
+//           0 <= c && c < Matrix_width(mat)
+// EFFECTS: Returns true if the element is on the Matrix border.  Returns false otherwise. 
+static bool border_element(const Matrix* mat, int r, int c) {
+  if (r == 0 || c == 0 || r == Matrix_height(mat) - 1 || c == Matrix_width(mat) - 1){
+    return true;
+  }
+  return false;
+}
 
 // REQUIRES: img points to a valid Image.
 //           energy points to a Matrix.
@@ -89,7 +98,19 @@ static int squared_difference(Pixel p1, Pixel p2) {
 void compute_energy_matrix(const Image* img, Matrix* energy) {
   Matrix_init(energy, Image_width(img), Image_height(img));
   Matrix_fill(energy, 0);
-  assert(squared_difference(Pixel(), Pixel())); // TODO delete me, this is here to make it compile
+  for (int r = 0; r < Matrix_height(energy); ++r){
+    for (int c = 0; c < Matrix_width(energy); ++c){
+      // Checks that a element isn't on the Matrix border.
+      if (!border_element(energy, r, c)){
+        int ns_diff = squared_difference(Image_get_pixel(img, r -  1, c), Image_get_pixel(img, r + 1, c));
+        int we_diff = squared_difference(Image_get_pixel(img, r, c - 1), Image_get_pixel(img, r, c + 1));
+        // Sets the energy for a given element.
+        *Matrix_at(energy, r, c) = ns_diff + we_diff;
+      }
+    }
+  }
+  int max_energy = Matrix_max(energy);
+  Matrix_fill_border(energy, max_energy);
 }
 
 
@@ -103,7 +124,30 @@ void compute_energy_matrix(const Image* img, Matrix* energy) {
 //           computed and written into it.
 //           See the project spec for details on computing the cost matrix.
 void compute_vertical_cost_matrix(const Matrix* energy, Matrix *cost) {
-  assert(false); // TODO Replace with your implementation!
+  assert(energy != cost);
+  Matrix_init(cost, Matrix_width(energy), Matrix_height(energy));
+
+  // Sets the cost for each pixel in row 0 as the energy for the pixel. 
+  for (int c = 0; c < Matrix_width(cost); ++c){
+    *Matrix_at(cost, 0, c) = *Matrix_at(energy, 0, c);
+  }
+
+  // Calculates the cost for the remaining pixels that aren't in row 0.
+  for (int r = 1; r < Matrix_height(energy); ++r) {
+    for (int c = 0; c < Matrix_width(energy); ++c) {
+      int column_start = c - 1; // column inclusive
+      int column_end = c + 2; // column exclusive 
+      
+      if (column_start < 0) {
+        column_start = 0;
+      }
+      if (column_end > Matrix_width(cost)) {
+        column_end = Matrix_width(cost);
+      }
+        
+      *Matrix_at(cost, r, c) = *Matrix_at(energy, r, c) + Matrix_min_value_in_row(cost, r - 1, column_start, column_end);
+    }
+  }
 }
 
 
@@ -123,7 +167,23 @@ void compute_vertical_cost_matrix(const Matrix* energy, Matrix *cost) {
 //           with the bottom of the image and proceeding to the top,
 //           as described in the project spec.
 void find_minimal_vertical_seam(const Matrix* cost, int seam[]) {
-  assert(false); // TODO Replace with your implementation!
+  int column = Matrix_column_of_min_value_in_row(cost, Matrix_height(cost) - 1, 0, Matrix_width(cost));
+  seam[Matrix_height(cost) - 1] = column;
+
+  for (int r = Matrix_height(cost) - 1; r > 0; --r){
+    int column_start = column - 1; // column inclusive
+    int column_end = column + 2; // column exclusive
+    
+    if (column_start < 0) {
+        column_start = 0;
+    }
+    if (column_end > Matrix_width(cost)) {
+        column_end = Matrix_width(cost);
+    } 
+
+    column = Matrix_column_of_min_value_in_row(cost, r - 1, column_start, column_end);
+    seam[r - 1] = column;  
+  }
 }
 
 
@@ -140,7 +200,24 @@ void find_minimal_vertical_seam(const Matrix* cost, int seam[]) {
 // NOTE:     Use the new operator here to create the smaller Image,
 //           and then use delete when you are done with it.
 void remove_vertical_seam(Image *img, const int seam[]) {
-  assert(false); // TODO Replace with your implementation!
+  assert(Image_width(img) >= 2);
+  Image *aux = new Image; // create a Image in dynamic memory
+  
+  Image_init(aux, Image_width(img) - 1, Image_height(img));
+
+  for (int r = 0; r < Image_height(img); ++r) {
+    assert(0 <= seam[r] && seam[r] < Image_width(img));
+    for (int c = 0; c < Image_width(img); ++c) {
+      if (c < seam[r]){
+        Image_set_pixel(aux, r, c, Image_get_pixel(img, r, c));
+      }else if (c > seam[r]){
+        Image_set_pixel(aux, r, c - 1, Image_get_pixel(img, r, c));   
+      }
+    }
+  }
+  *img = *aux;
+  
+  delete aux; // delete the image
 }
 
 

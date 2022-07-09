@@ -24,11 +24,11 @@ void Matrix_init(Matrix* mat, int width, int height) {
 //           by a newline. This means there will be an "extra" space at
 //           the end of each line.
 void Matrix_print(const Matrix* mat, ostream& os) {
-  const int height = Matrix_height(mat);
-  const int width = Matrix_width(mat);
-  os << width << " " << height << endl;
-  for (int r = 0; r < height; ++r){
-    for (int c = 0; c < width; ++c){
+  os << Matrix_width(mat) << " " << Matrix_height(mat) << endl;
+  
+  // Prints each row in the Matrix to os.
+  for (int r = 0; r < Matrix_height(mat); ++r){
+    for (int c = 0; c < Matrix_width(mat); ++c){
       os << *Matrix_at(mat, r, c) << " ";
     }
     os << endl;

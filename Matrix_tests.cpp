@@ -32,8 +32,9 @@ TEST(test_fill_basic) {
 // ADD YOUR TESTS HERE
 
 // Tests that the height and width members for a Matrix are intialized correctly. 
-TEST(test_matrix_init){
+TEST(test_matrix_init_basic){
   Matrix *mat = new Matrix; // creates a Matrix in dynamic memory
+  
   Matrix_init(mat, 3, 5);
  
   ASSERT_TRUE(0 < Matrix_width(mat) && Matrix_width(mat) <= MAX_MATRIX_WIDTH);
@@ -98,46 +99,54 @@ TEST(test_rows_columns_basic){
   delete mat; // deletes the Matrix 
 }
 
-// Tests matrix_at by comparing the actual pointer and the correct pointer for a given row and column.  
+// Tests that Matrix_at returns the correct border and non-border values.
 TEST(test_matrix_at_basic){
-  Matrix *mat = new Matrix; // creates a Matrix in dynamic memory
+  Matrix *mat = new Matrix; // creates a Matrix in dynamic memory 
   
-  Matrix_init(mat, 5, 3);
-  
-  int i = 0;
+  Matrix_init(mat, 3, 3);
+  Matrix_fill(mat, 1);
+  Matrix_fill_border(mat, 2);
+
   for(int r = 0; r < Matrix_height(mat); ++r){
     for(int c = 0; c < Matrix_width(mat); ++c){
-      int* actual_ptr = Matrix_at(mat, r, c);
-      int* correct_ptr = &mat->data[i++];  
-      // Tests that the actual pointer and the correct pointer have the same row and same column. 
-      ASSERT_EQUAL(Matrix_row(mat, actual_ptr), Matrix_row(mat, correct_ptr));
-      ASSERT_EQUAL(Matrix_column(mat, actual_ptr), Matrix_column(mat, correct_ptr));
+      // Checks that the non-border element in the Matrix is equal to the value for Matrix_fill.
+      if (r == 1 && c == 1){
+      ASSERT_EQUAL(*Matrix_at(mat, r, c), 1);
+      }
+      // Checks that all border elements equal the value for Matrix_fill_border.
+      else{
+        ASSERT_EQUAL(*Matrix_at(mat, r, c), 2);
+      }
     }
-  }
+  } 
   
-  delete mat; // deletes the Matrix      
+  delete mat; // deletes the Matrix        
 }
 
-// Tests matrix_at by comparing the actual pointer and the correct pointer for a given row and column.
-// Same test as test_matrix_at_basic.
+// Tests that const Matrix_at returns the correct border and non-border values. 
 TEST(test_const_matrix_at_basic){
-  Matrix *const c_mat = new Matrix; // creates a const Matrix in dynamic memory
+  Matrix *mat = new Matrix; // creates a Matrix in dynamic memory 
   
-   
-  Matrix_init(c_mat, 3, 5);  
-  
-  int i = 0;
-  for(int r = 0; r < Matrix_height(c_mat); ++r){
-    for(int c = 0; c < Matrix_width(c_mat); ++c){
-      const int* c_actual_ptr = Matrix_at(c_mat, r, c);
-      const int* correct_ptr = &c_mat->data[i++];
-      // Tests that the actual pointer and the correct pointer have the same row and same column. 
-      ASSERT_EQUAL(Matrix_row(c_mat, c_actual_ptr), Matrix_row(c_mat, correct_ptr));
-      ASSERT_EQUAL(Matrix_column(c_mat, c_actual_ptr), Matrix_column(c_mat, correct_ptr));
+  Matrix_init(mat, 3, 3);
+  Matrix_fill(mat, 1);
+  Matrix_fill_border(mat, 2);
+
+  const Matrix *const_mat = mat; 
+
+  for(int r = 0; r < Matrix_height(mat); ++r){
+    for(int c = 0; c < Matrix_width(mat); ++c){
+      // Checks that the non-border element in the Matrix is equal to the value for Matrix_fill.
+      if (r == 1 && c == 1){
+      ASSERT_EQUAL(*Matrix_at(const_mat, r, c), 1);
+      }
+      // Checks that all border elements equal the value for Matrix_fill_border.
+      else{
+        ASSERT_EQUAL(*Matrix_at(const_mat, r, c), 2);
+      }
     }
-  }
+  } 
   
-  delete c_mat; // deletes the Matrix      
+  delete mat; // deletes the Matrix      
 }  
 
 // Tests that every row and column pair that is a border of the matrix

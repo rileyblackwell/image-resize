@@ -49,6 +49,7 @@ TEST(test_print_basic) {
 // Tests that height and width members are correctly intialized.
 TEST(test_image_init_basic){
   Image *img = new Image; // create an Image in dynamic memory
+  
   Image_init(img, 3, 2);
   
   // Checks image invariants.  Checks width and height of image. 
