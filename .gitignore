@@ -1,5 +1,6 @@
 *.ppm
 *.txt
+*.exe
 .vscode
 Makefile
 my_testing.cpp

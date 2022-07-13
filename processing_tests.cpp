@@ -236,5 +236,82 @@ TEST(test_remove_vertical_seam_basic) {
   delete correct_img; 
 }
 
+TEST(test_seam_carve_width_basic){
+  Image *img = new Image; // create an Image in dynamic memory
+  
+  // Intializes a 3x3 Image.
+  string input = "P3\n3 3\n255\n";
+  input += "0 0 0 100 100 100 0 0 0 \n";
+  input += "100 100 100 0 0 0 200 200 200 \n";
+  input += "50 50 50 0 0 0 0 0 0 \n"; 
+  istringstream is(input);
+  Image_init(img, is);  
+  
+  // Creates a 1x3 Image.
+  seam_carve_width(img, 1);
+
+  ASSERT_EQUAL(Image_width(img), 1);
+
+  delete img; // delete the image
+}
+
+TEST(test_seam_carve_height_basic){
+  Image *img = new Image; // create an Image in dynamic memory
+  
+  // Intializes a 3x3 Image.
+  string input = "P3\n3 3\n255\n";
+  input += "0 0 0 100 100 100 0 0 0 \n";
+  input += "100 100 100 0 0 0 200 200 200 \n";
+  input += "50 50 50 0 0 0 0 0 0 \n"; 
+  istringstream is(input);
+  Image_init(img, is);  
+  
+  // Creates a 3x1 Image.
+  seam_carve_height(img, 1);
+
+  ASSERT_EQUAL(Image_height(img), 1);
+
+  delete img; // delete the image
+}
+
+TEST(test_seam_carve_basic){
+  Image *img = new Image; // create an Image in dynamic memory
+  
+  // Intializes a 3x3 Image.
+  string input = "P3\n3 3\n255\n";
+  input += "0 0 0 100 100 100 0 0 0 \n";
+  input += "100 100 100 0 0 0 200 200 200 \n";
+  input += "50 50 50 0 0 0 0 0 0 \n"; 
+  istringstream is(input);
+  Image_init(img, is);  
+  
+  // Creates a 2x1 Image.
+  seam_carve(img, 2, 1);
+
+  ASSERT_EQUAL(Image_width(img), 2);
+  ASSERT_EQUAL(Image_height(img), 1);
+
+  delete img; // delete the image  
+}
+
+TEST(test_seam_carve_same_width_and_height){
+  Image *img = new Image; // create an Image in dynamic memory
+  
+  // Intializes a 3x3 Image.
+  string input = "P3\n3 3\n255\n";
+  input += "0 0 0 100 100 100 0 0 0 \n";
+  input += "100 100 100 0 0 0 200 200 200 \n";
+  input += "50 50 50 0 0 0 0 0 0 \n"; 
+  istringstream is(input);
+  Image_init(img, is);  
+  
+  // Seam carve algorithm with the width and height unchanged.
+  seam_carve(img, 3, 3);
+
+  ASSERT_EQUAL(Image_width(img), 3);
+  ASSERT_EQUAL(Image_height(img), 3);
+
+  delete img; // delete the image    
+}
 
 TEST_MAIN()

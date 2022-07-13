@@ -199,38 +199,58 @@ TEST(test_matrix_max_basic){
   delete mat; // deletes the Matrix 
 }
 
-// Tests that the value of every column in row 0 of the Matrix between column_start and column_end is more than
-// the value at row 0 and Matrix_column_of_min_value_in_row.  
-// If the values are equal then check that the column is greater than Matrix_column_of_min_value_in_row.     
 TEST(test_matrix_column_of_min_value_in_row_basic){
   Matrix *mat = new Matrix; // creates a Matrix in dynamic memory
 
-  const int width = 5;
-  const int height = 3;
+  Matrix_init(mat, 4, 4);
+  Matrix_fill(mat, 3);
+  Matrix_fill_border(mat, 2);
+  // Sets a min element.
+  *Matrix_at(mat, 1, 1) = 1;
+
   const int column_start = 0;
   const int column_end = 4;
-  const int row = 0;
-  Matrix_init(mat, width, height);
-  Matrix_fill(mat, 2);
-  // Sets 2 elements in row 0 to the minimum value for all elements between column_start and column_end within row 0.
-  int *element_column_1 = Matrix_at(mat, 0, 0);
-  *element_column_1 = 1;
-  int *element_column_2 = Matrix_at(mat, 0, 1);
-  *element_column_2 = 1;
-  ASSERT_TRUE(0 <= row && row < Matrix_height(mat));
+  const int r = 1;
+  ASSERT_TRUE(0 <= r && r < Matrix_height(mat));
   ASSERT_TRUE(0 <= column_start && column_end <= Matrix_width(mat));
   ASSERT_TRUE(column_start < column_end);
-  const int min_column = Matrix_column_of_min_value_in_row(mat, row, column_start, column_end);
+
+  const int min_column = Matrix_column_of_min_value_in_row(mat, r, column_start, column_end);
   
   for (int c = column_start; c < column_end; ++c){
-    // Checks if 2 or more values are the min that the left most value is choosen as the min. 
-    if (*Matrix_at(mat, 0, min_column)  == *Matrix_at(mat, 0, c)){
+     ASSERT_TRUE(*Matrix_at(mat, r, min_column) <= *Matrix_at(mat, r, c));    
+  }
+
+  delete mat; // deletes the Matrix 
+}
+
+TEST(test_matrix_column_of_min_value_in_row_2_mins){
+  Matrix *mat = new Matrix; // creates a Matrix in dynamic memory
+
+  Matrix_init(mat, 4, 4);
+  Matrix_fill(mat, 2);
+  // Sets 2 min elements.
+  *Matrix_at(mat, 0, 0) = 1;
+  *Matrix_at(mat, 0, 1) = 1;
+
+  const int column_start = 0;
+  const int column_end = 4;
+  const int r = 0;
+  ASSERT_TRUE(0 <= r && r < Matrix_height(mat));
+  ASSERT_TRUE(0 <= column_start && column_end <= Matrix_width(mat));
+  ASSERT_TRUE(column_start < column_end);
+  
+  const int min_column = Matrix_column_of_min_value_in_row(mat, r, column_start, column_end);
+  
+  for (int c = column_start; c < column_end; ++c){
+    // Tests if 2 values are the min that the left most value is choosen. 
+    if (*Matrix_at(mat, r, min_column)  == *Matrix_at(mat, r, c)){
       if (min_column != c){
         ASSERT_TRUE(min_column < c);
       }
-    } // Checks the simple case that min_column is the column with the min value for a given range of columns.
+    } // Tests the simple case that min_column is the min for a given range of columns.
     else{ 
-        ASSERT_TRUE(*Matrix_at(mat, 0, min_column) < *Matrix_at(mat, 0, c));
+        ASSERT_TRUE(*Matrix_at(mat, r, min_column) < *Matrix_at(mat, r, c));
     }     
   }
   

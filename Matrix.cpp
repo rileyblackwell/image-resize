@@ -167,6 +167,7 @@ int Matrix_column_of_min_value_in_row(const Matrix* mat, int row,
     // The simple case: a new min value is found and the column is a saved as the new best. 
     if (min_value > *Matrix_at(mat, row, c)){
       min_column = c;
+      min_value = *Matrix_at(mat, row, c);
     } // The equal values case: A value is equal to the min value.  If the column is less than min_column then a new best column is saved.
     else if (min_value == *Matrix_at(mat, row, c)){ 
       if (min_column > c){
